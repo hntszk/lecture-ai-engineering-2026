@@ -1,0 +1,7 @@
+# Runtime dependencies
+google-genai==2.31.0
+pydantic-ai-slim[google,mcp]==2.57.0
+python-dotenv==1.2.4
+
+# Development and test dependencies
+pytest>=8
