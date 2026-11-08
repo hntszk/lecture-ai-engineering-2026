@@ -39,6 +39,26 @@ def test_lecture_summary():
     assert "まだありません" in tools.get_lecture_summary(99)
 
 
+def test_make_quiz_uses_only_terms_from_requested_lecture(monkeypatch):
+    terms = [e for e in tools.load_glossary() if e["lecture"] == 2]
+
+    def choose(candidates):
+        assert candidates == terms
+        return candidates[-1]
+
+    monkeypatch.setattr(tools.random, "choice", choose)
+    quiz = json.loads(tools.make_quiz(2))
+    assert quiz == {
+        "question": f"「{terms[-1]['term']}」の意味は？",
+        "answer": terms[-1]["definition"],
+    }
+
+
+def test_make_quiz_reports_missing_lecture():
+    for lecture in [0, -1, 99]:
+        assert "見つかりませんでした" in tools.make_quiz(lecture)
+
+
 def test_default_question_of_lecture1_is_answerable_from_glossary():
     """第1回の既定の質問（app.ask）は、第3回のエージェントが用語集で正しく答えられること。"""
     from app.ask import DEFAULT_QUESTION
